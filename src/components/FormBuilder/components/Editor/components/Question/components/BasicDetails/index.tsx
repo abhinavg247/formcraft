@@ -1,0 +1,1 @@
+export { BasicDetails } from "./BasicDetails";

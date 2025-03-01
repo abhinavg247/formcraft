@@ -1,0 +1,34 @@
+.questionContainer {
+  position: relative;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+.questionFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.deleteButton {
+  color: #f44336;
+}
+
+.deleteButton:hover {
+  background-color: rgba(244, 67, 54, 0.04);
+}
+
+.savingStatus {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.savingText {
+  margin-left: 8px;
+  color: #757575;
+}

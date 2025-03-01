@@ -1,0 +1,12 @@
+.form-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden; /* Ensures no unwanted scrolling */
+  }
+  
+  .main-content {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+  
