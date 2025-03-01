@@ -1,10 +1,10 @@
 import {
-  addNewQuestionToQuestions,
   getQuestionError,
   getQuestionsErrorMap,
   getQuestionsInitialState,
   removeQuestionFromLocalStorage,
   saveQuestionToLocalStorage,
+  getNewQuestion,
 } from "../utils/questionUtils";
 import { QuestionType } from "../constants/questionConstants";
 import {
@@ -44,7 +44,9 @@ export const useQuestions = ({
     setQuestions((prevQuestions) =>
       prevQuestions.map((currentQuestion) =>
         currentQuestion.id === question.id
-          ? { ...currentQuestion, isSaving: true }
+          ? update(currentQuestion, {
+              isSaving: { $set: true },
+            })
           : currentQuestion
       )
     );
@@ -74,75 +76,61 @@ export const useQuestions = ({
       });
   }, []);
 
+  const updateQuestionsErrorMap = useCallback(() => {
+    setQuestions((prevQuestions) => {
+      const newErrorMap = getQuestionsErrorMap(prevQuestions);
+      setQuestionsErrorMap(newErrorMap);
+      return prevQuestions;
+    });
+  }, []);
+
   const handleAddQuestion = useCallback(
-    (questionType: QuestionType) => {
-      setQuestions((prevQuestions) => {
-        const updatedQuestions = addNewQuestionToQuestions(
-          questionType,
-          prevQuestions
-        );
-        return updatedQuestions;
-      });
-
+    async (questionType: QuestionType) => {
+      const newQuestion = getNewQuestion(questionType);
+      setQuestions((prevQuestions) =>
+        update(prevQuestions, {
+          $push: [newQuestion],
+        })
+      );
       if (isBuilderValidatedOnce) {
-        setQuestions((prevQuestions) => {
-          const newErrorMap = getQuestionsErrorMap(prevQuestions);
-          setQuestionsErrorMap(newErrorMap);
-          return prevQuestions;
-        });
+        updateQuestionsErrorMap();
       }
-
       if (shouldSaveToLocalStorage) {
-        setQuestions((prevQuestions) => {
-          const latestQuestion = prevQuestions[prevQuestions.length - 1];
-          autoSaveQuestion(latestQuestion);
-          return prevQuestions;
-        });
+        autoSaveQuestion(newQuestion);
       }
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleRemoveQuestion = useCallback(
     (questionId: string) => {
+      let previousQuestions: Question[];
       setQuestions((prevQuestions) => {
+        previousQuestions = prevQuestions;
         const newQuestions = prevQuestions.filter(
           (currentQuestion) => currentQuestion.id !== questionId
         );
-
-        if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(newQuestions));
-        }
-
-        if (shouldSaveToLocalStorage) {
-          const updatedQuestions = newQuestions.map((currentQuestion) =>
-            currentQuestion.id === questionId
-              ? update(currentQuestion, {
-                  isRemoving: { $set: false },
-                })
-              : currentQuestion
-          );
-
-          removeQuestionFromLocalStorage(questionId)
-            .then(() => {
-              setQuestions((questions) =>
-                questions.filter(
-                  (currentQuestion) => currentQuestion.id !== questionId
-                )
-              );
-            })
-            .catch((error) => {
-              console.error("Failed to remove question:", error);
-              setQuestions(prevQuestions);
-            });
-
-          return updatedQuestions;
-        }
-
         return newQuestions;
       });
+      if (isBuilderValidatedOnce) {
+        updateQuestionsErrorMap();
+      }
+      if (shouldSaveToLocalStorage) {
+        removeQuestionFromLocalStorage(questionId).catch((error) => {
+          const deletedQuestionIndex = previousQuestions.findIndex(
+            (ques) => ques.id === questionId
+          );
+          const deletedQuestion = previousQuestions.find(
+            (ques) => ques.id === questionId
+          );
+          // reinsert failed to delete element
+          setQuestions((prevQuestions) =>
+            prevQuestions.splice(deletedQuestionIndex, 0, deletedQuestion)
+          );
+        });
+      }
     },
-    [isBuilderValidatedOnce]
+    [isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleQuestionTitleUpdate = useCallback(
@@ -154,7 +142,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -165,7 +153,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleQuestionIsMandatoryUpdate = useCallback(
@@ -177,7 +165,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -188,7 +176,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleQuestionHelpTextUpdate = useCallback(
@@ -200,7 +188,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -211,7 +199,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleIsParagraphUpdate = useCallback(
@@ -225,7 +213,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -236,7 +224,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleMinValueUpdate = useCallback(
@@ -250,7 +238,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -261,7 +249,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleMaxValueUpdate = useCallback(
@@ -275,7 +263,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -286,7 +274,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleOptionsAdd = useCallback(
@@ -300,7 +288,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -311,7 +299,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleOptionsUpdate = useCallback(
@@ -336,7 +324,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -347,7 +335,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleOptionsRemove = useCallback(
@@ -366,7 +354,7 @@ export const useQuestions = ({
             : currentQuestion
         );
         if (isBuilderValidatedOnce) {
-          setQuestionsErrorMap(getQuestionsErrorMap(updatedQuestions));
+          updateQuestionsErrorMap();
         }
         if (shouldSaveToLocalStorage) {
           const latestQuestion = updatedQuestions.find(
@@ -377,7 +365,7 @@ export const useQuestions = ({
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce]
+    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const validateBuilder = useCallback(() => {

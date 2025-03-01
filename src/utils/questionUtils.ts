@@ -65,25 +65,21 @@ export const saveQuestionToLocalStorage = async (question: Question) => {
         reject(new Error("Failed to save question"));
         return;
       }
+
       const savedQuestions = JSON.parse(
         localStorage.getItem(LOCAL_STORAGE_QUESTIONS_KEY) || "[]"
       );
-      const questionToSave = update(question, {
-        isSaving: { $set: false },
-      });
-      const updatedQuestions = savedQuestions.map((currentQuestion: Question) =>
-        currentQuestion.id === questionToSave.id
-          ? questionToSave
-          : currentQuestion
+
+      const doesQuestionExistInLocalStorage = savedQuestions.some(
+        (currentQuestion) => currentQuestion.id === question.id
       );
-      if (
-        !updatedQuestions.some(
-          (currentQuestion: Question) =>
-            currentQuestion.id === questionToSave.id
-        )
-      ) {
-        updatedQuestions.push(questionToSave);
+      const updatedQuestions = savedQuestions.map((currentQuestion: Question) =>
+        currentQuestion.id === question.id ? question : currentQuestion
+      );
+      if (!doesQuestionExistInLocalStorage) {
+        updatedQuestions.push(question);
       }
+
       localStorage.setItem(
         LOCAL_STORAGE_QUESTIONS_KEY,
         JSON.stringify(updatedQuestions)
@@ -117,14 +113,6 @@ export const removeQuestionFromLocalStorage = async (
     }, delay);
   });
 };
-
-export const addNewQuestionToQuestions = (
-  questionType: QuestionType,
-  questions: Question[]
-): Question[] =>
-  update(questions, {
-    $push: [getNewQuestion(questionType)],
-  });
 
 export const getQuestionError = (
   question: Question

@@ -9,7 +9,6 @@ import {
   FormControlLabel,
   Button,
   Box,
-  FormControl,
 } from "@mui/material";
 
 //constants
@@ -152,12 +151,12 @@ export const AdditionalDetails = ({
               </Button>
             </Box>
           ))}
-          <Button onClick={handleOptionAdd}>Add Option</Button>
           {questionError?.additionalDetailsError?.optionsError && (
             <Box className={styles.errorText}>
               {questionError.additionalDetailsError.optionsError}
             </Box>
           )}
+          <Button onClick={handleOptionAdd}>Add Option</Button>
         </Box>
       )}
     </Box>
