@@ -1,16 +1,22 @@
 import { QuestionType } from "../../../../constants/questionConstants";
-import styles from "./QuestionAnswerRenderer.module.css";
+
 import {
-  TextField,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
   Typography,
-  Box,
+  TextField,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  FormControl,
   Chip,
+  Grow,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
+import TextFieldsIcon from "@mui/icons-material/TextFields";
+import NumbersIcon from "@mui/icons-material/Numbers";
+import ListIcon from "@mui/icons-material/List";
+import styles from "./QuestionAnswerRenderer.module.css";
 import { QuestionAnswerRendererProps } from "../../../../types";
+import { isMaxDefined, isMinDefined } from "../../../../utils/numberValidation";
 
 export const QuestionAnswerRenderer = ({
   question,
@@ -18,62 +24,71 @@ export const QuestionAnswerRenderer = ({
   answerError,
   handleAnswerUpdate,
 }: QuestionAnswerRendererProps) => {
-  const renderQuestionDetails = () => {
-    return (
-      <Box className={styles.questionDetails}>
-        <Typography variant="subtitle1" className={styles.questionType}>
-          Type: {question.type}
-        </Typography>
-        {question.isMandatory && (
-          <Chip
-            label="Mandatory"
-            color="primary"
-            size="small"
-            className={styles.mandatoryChip}
-          />
-        )}
-        {question.helpText && (
-          <Typography variant="body2" className={styles.helpText}>
-            Help: {question.helpText}
-          </Typography>
-        )}
-      </Box>
-    );
+  const getQuestionTypeIcon = (type: QuestionType) => {
+    switch (type) {
+      case QuestionType.TEXT:
+        return <TextFieldsIcon />;
+      case QuestionType.NUMBER:
+        return <NumbersIcon />;
+      case QuestionType.SELECT:
+        return <ListIcon />;
+      default:
+        return null;
+    }
   };
 
   const renderAdditionalDetails = () => {
     switch (question.type) {
       case QuestionType.TEXT:
         return (
-          <Typography variant="body2" className={styles.additionalInfo}>
-            {question.additionalDetails.isParagraph
-              ? "Paragraph"
-              : "Single line"}{" "}
-            text input
-          </Typography>
+          question.additionalDetails.isParagraph && (
+            <Chip
+              label="Paragraph"
+              color="primary"
+              size="small"
+              className={`${styles.chip} ${styles.optionChip}`}
+            />
+          )
         );
       case QuestionType.NUMBER:
+        const { min, max } = question.additionalDetails;
         return (
-          <Typography variant="body2" className={styles.additionalInfo}>
-            Range: {question.additionalDetails.min} to{" "}
-            {question.additionalDetails.max}
-          </Typography>
+          <div className={styles.numberDetails}>
+            {isMinDefined(min) && (
+              <Chip
+                label={`Min: ${min}`}
+                size="small"
+                className={`${styles.chip} ${styles.minChip}`}
+              />
+            )}
+            {isMaxDefined(min) && (
+              <Chip
+                label={`Max: ${max}`}
+                size="small"
+                className={`${styles.chip} ${styles.maxChip}`}
+              />
+            )}
+          </div>
         );
       case QuestionType.SELECT:
         return (
-          <Box className={styles.optionsList}>
-            <Typography variant="body2">Options:</Typography>
-            <ul>
-              {question.additionalDetails.options?.map((option) => (
-                <li key={option.id}>{option.label}</li>
-              ))}
-            </ul>
-          </Box>
+          <div className={styles.selectOptions}>
+            {question.additionalDetails.options?.map((option) => (
+              <Chip
+                key={option.id}
+                label={option.label}
+                variant="outlined"
+                size="small"
+                className={`${styles.chip} ${styles.optionChip}`}
+              />
+            ))}
+          </div>
         );
       default:
         return null;
     }
   };
+
   const renderAnswerInput = () => {
     switch (question.type) {
       case QuestionType.TEXT:
@@ -88,60 +103,64 @@ export const QuestionAnswerRenderer = ({
             }
             error={!!answerError}
             helperText={answerError}
-            variant="outlined"
-            className={styles.answerInput}
+            placeholder={
+              question.additionalDetails.isParagraph
+                ? "Enter your response here..."
+                : "Your answer"
+            }
           />
         );
       case QuestionType.NUMBER:
+        const { min, max } = question.additionalDetails;
         return (
           <TextField
-            fullWidth
             type="number"
+            fullWidth
             value={answer || ""}
             onChange={(e) =>
-              handleAnswerUpdate(question.id, question.type, e.target.value)
+              handleAnswerUpdate(
+                question.id,
+                question.type,
+                Number(e.target.value)
+              )
             }
             error={!!answerError}
             helperText={answerError}
-            variant="outlined"
-            className={styles.answerInput}
             inputProps={{
-              min: question.additionalDetails.min,
-              max: question.additionalDetails.max,
+              min: isMinDefined(min) ? min : undefined,
+              max: isMaxDefined(max) ? max : undefined,
             }}
+            placeholder={
+              isMinDefined(min) && isMaxDefined(max)
+                ? `Enter a number between ${min} and ${max}`
+                : isMinDefined(min)
+                ? `Enter a number ${min} or greater`
+                : isMaxDefined(max)
+                ? `Enter a number up to ${max}`
+                : "Enter a number"
+            }
           />
         );
       case QuestionType.SELECT:
         return (
-          <FormControl
-            fullWidth
-            className={styles.answerInput}
-            error={!!answerError}
-          >
-            <InputLabel id={`select-label-${question.id}`}>
-              Select an option
-            </InputLabel>
-            <Select
-              labelId={`select-label-${question.id}`}
+          <FormControl component="fieldset" error={!!answerError}>
+            <RadioGroup
               value={answer || ""}
               onChange={(e) =>
-                handleAnswerUpdate(
-                  question.id,
-                  question.type,
-                  e.target.value as string
-                )
+                handleAnswerUpdate(question.id, question.type, e.target.value)
               }
             >
               {question.additionalDetails.options?.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.label}
-                </MenuItem>
+                <FormControlLabel
+                  key={option.id}
+                  value={option.id}
+                  control={<Radio />}
+                  label={option.label}
+                />
               ))}
-            </Select>
+            </RadioGroup>
             {answerError && (
-              <Typography color="error" variant="caption">
-                {answerError}
-              </Typography>
+              <Typography color="error">{answerError}</Typography>
             )}
           </FormControl>
         );
@@ -151,16 +170,42 @@ export const QuestionAnswerRenderer = ({
   };
 
   return (
-    <Box className={styles.questionContainer}>
-      <Typography variant="h6" className={styles.questionTitle}>
-        {question.title}
-        {question.isMandatory && (
-          <span className={styles.mandatoryIndicator}>*</span>
+    <Grow in={true} timeout={300}>
+      <div className={styles.questionContainer}>
+        <div className={styles.questionHeader}>
+          <Typography variant="h6" className={styles.questionTitle}>
+            {getQuestionTypeIcon(question.type)}
+            {question.title}
+          </Typography>
+          {question.isMandatory && (
+            <Chip
+              label="Required"
+              size="small"
+              className={`${styles.chip} ${styles.mandatoryChip}`}
+            />
+          )}
+        </div>
+        {question.helpText && (
+          <Typography
+            style={{
+              marginBottom: "1rem",
+            }}
+            variant="body2"
+            className={styles.helpText}
+          >
+            <InfoIcon
+              fontSize="small"
+              style={{
+                marginRight: "8px",
+                verticalAlign: "middle",
+              }}
+            />
+            {question.helpText}
+          </Typography>
         )}
-      </Typography>
-      {renderQuestionDetails()}
-      {renderAdditionalDetails()}
-      {renderAnswerInput()}
-    </Box>
+        {renderAdditionalDetails()}
+        <div className={styles.answerSection}>{renderAnswerInput()}</div>
+      </div>
+    </Grow>
   );
 };

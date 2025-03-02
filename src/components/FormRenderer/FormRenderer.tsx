@@ -1,34 +1,34 @@
+import { Typography, Paper, Container, Box } from "@mui/material";
 import { FormRendererProps } from "../../types";
-import { Typography, Box } from "@mui/material";
-import { QuestionAnswerRenderer } from "./components/QuestionAnswerRenderer";
-import { ReactElement } from "react";
+import { QuestionAnswerRenderer } from "./components/QuestionAnswerRenderer/QuestionAnswerRenderer";
 import styles from "./FormRenderer.module.css";
 
-export const FormRenderer = ({
+export const FormRenderer: React.FC<FormRendererProps> = ({
   questions,
   questionIdVsAnswersMap,
   answersErrorMap,
   handleAnswerUpdate,
-}: FormRendererProps): ReactElement => {
+}) => {
   return (
-    <Box className={styles.formRendererContainer}>
-      <Box className={styles.formContent}>
-        <Box className={styles.formInnerContent}>
+    <Box className={styles.background}>
+      <Container className={styles.formContainer}>
+        <Paper elevation={3} className={styles.formPaper}>
           <Typography variant="h4" className={styles.formTitle}>
-            Form Renderer
+            Form Preview
           </Typography>
-          {questions.map((question) => (
-            <Box key={question.id}>
+          <Box className={styles.formContent}>
+            {questions.map((question) => (
               <QuestionAnswerRenderer
+                key={question.id}
                 question={question}
                 answer={questionIdVsAnswersMap[question.id]}
                 answerError={answersErrorMap[question.id]}
                 handleAnswerUpdate={handleAnswerUpdate}
               />
-            </Box>
-          ))}
-        </Box>
-      </Box>
+            ))}
+          </Box>
+        </Paper>
+      </Container>
     </Box>
   );
 };

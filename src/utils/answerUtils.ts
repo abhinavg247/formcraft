@@ -23,13 +23,14 @@ export const getAnswersErrorMap = (
   questions.reduce((answersErrorMap: AnswersErrorMap, question: Question) => {
     const questionType = question.type;
     const answer = questionsIdVsAnswersMap[question.id];
-    if (!answer) {
-      return update(answersErrorMap, {
-        [question.id]: { $set: "Answer is required" },
-      });
-    }
+
     switch (questionType) {
       case QuestionType.TEXT: {
+        if (!answer) {
+          return update(answersErrorMap, {
+            [question.id]: { $set: "Answer is required" },
+          });
+        }
         if (typeof answer !== "string") {
           return update(answersErrorMap, {
             [question.id]: { $set: "Answer must be a string" },
@@ -72,6 +73,11 @@ export const getAnswersErrorMap = (
         break;
       }
       case QuestionType.SELECT: {
+        if (!answer) {
+          return update(answersErrorMap, {
+            [question.id]: { $set: "Answer is required" },
+          });
+        }
         if (!Array.isArray(answer)) {
           return update(answersErrorMap, {
             [question.id]: {
