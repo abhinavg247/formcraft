@@ -17,7 +17,7 @@ export const getInitialAdditionalDetails = (questionType: QuestionType) => {
     case QuestionType.TEXT:
       return { isParagraph: false };
     case QuestionType.NUMBER:
-      return { min: 0 };
+      return {};
     case QuestionType.SELECT:
       return { options: [] };
     default:

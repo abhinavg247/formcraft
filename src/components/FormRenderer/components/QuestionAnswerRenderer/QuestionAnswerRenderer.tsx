@@ -61,7 +61,7 @@ export const QuestionAnswerRenderer = ({
                 className={`${styles.chip} ${styles.minChip}`}
               />
             )}
-            {isMaxDefined(min) && (
+            {isMaxDefined(max) && (
               <Chip
                 label={`Max: ${max}`}
                 size="small"

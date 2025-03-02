@@ -113,11 +113,18 @@ export const useAnswers = ({
     questions,
   ]);
 
+  const resetAnswers = useCallback(() => {
+    setQuestionIdVsAnswersMap({});
+    setAnswersErrorMap({});
+    setIsRendererValidatedOnce(false);
+  }, []);
+
   return {
     questionIdVsAnswersMap,
     answersErrorMap,
     handleAnswerUpdate,
     submitForm,
     isSavingForm,
+    resetAnswers,
   };
 };

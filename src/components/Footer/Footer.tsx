@@ -8,6 +8,7 @@ interface FooterProps {
   onEditBuild: () => void;
   submitForm: () => void;
   isSavingForm: boolean;
+  onResetBuild: () => void;
 }
 
 export const Footer = ({
@@ -17,17 +18,27 @@ export const Footer = ({
   onEditBuild,
   submitForm,
   isSavingForm,
+  onResetBuild,
 }: FooterProps) => {
   return (
     <Box className={styles.footer}>
       {isBuilding && (
-        <Button onClick={validateBuilder} variant="contained">
-          Build
-        </Button>
+        <>
+          <Button onClick={onResetBuild} variant="outlined" color="warning">
+            Reset
+          </Button>
+          <Button
+            onClick={validateBuilder}
+            sx={{ marginLeft: "1rem" }}
+            variant="contained"
+          >
+            Build Form
+          </Button>
+        </>
       )}
       {isRendering && (
         <>
-          <Button onClick={onEditBuild} variant="contained">
+          <Button onClick={onEditBuild} color="warning" variant="outlined">
             Edit Build
           </Button>
           <Button

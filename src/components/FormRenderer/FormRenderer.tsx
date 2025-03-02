@@ -3,15 +3,15 @@ import { FormRendererProps } from "../../types";
 import { QuestionAnswerRenderer } from "./components/QuestionAnswerRenderer/QuestionAnswerRenderer";
 import styles from "./FormRenderer.module.css";
 
-export const FormRenderer: React.FC<FormRendererProps> = ({
+export const FormRenderer = ({
   questions,
   questionIdVsAnswersMap,
   answersErrorMap,
   handleAnswerUpdate,
-}) => {
+}: FormRendererProps) => {
   return (
     <Box className={styles.background}>
-      <Container className={styles.formContainer}>
+      <Box className={styles.formContainer}>
         <Paper elevation={3} className={styles.formPaper}>
           <Typography variant="h4" className={styles.formTitle}>
             Form Preview
@@ -28,7 +28,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
             ))}
           </Box>
         </Paper>
-      </Container>
+      </Box>
     </Box>
   );
 };

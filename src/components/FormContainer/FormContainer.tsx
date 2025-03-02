@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { FormBuilder } from "../FormBuilder";
 import { FormRenderer } from "../FormRenderer";
 import { Footer } from "../Footer";
@@ -7,6 +9,7 @@ import { useQuestions } from "../../hooks/useQuestions";
 import { useAnswers } from "../../hooks/useAnswers";
 
 import styles from "./FormContainer.module.css";
+
 export const FormContainer = () => {
   const { isBuilding, isRendering, openBuilder, onBuilderValidationSuccess } =
     useFormScreen();
@@ -26,6 +29,7 @@ export const FormContainer = () => {
     onOptionsUpdate,
     onOptionsRemove,
     validateBuilder,
+    resetBuild,
   } = useQuestions({
     onBuilderValidationSuccess,
   });
@@ -36,9 +40,15 @@ export const FormContainer = () => {
     handleAnswerUpdate,
     submitForm,
     isSavingForm,
+    resetAnswers,
   } = useAnswers({
     questions,
   });
+
+  const onEditBuild = useCallback(() => {
+    resetAnswers();
+    openBuilder();
+  }, [openBuilder, resetAnswers]);
 
   return (
     <Box className={styles.formContainer}>
@@ -72,10 +82,11 @@ export const FormContainer = () => {
       <Footer
         isBuilding={isBuilding}
         isRendering={isRendering}
-        validateBuilder={validateBuilder}
-        onEditBuild={openBuilder}
-        submitForm={submitForm}
         isSavingForm={isSavingForm}
+        validateBuilder={validateBuilder}
+        onResetBuild={resetBuild}
+        onEditBuild={onEditBuild}
+        submitForm={submitForm}
       />
     </Box>
   );

@@ -5,6 +5,7 @@ import {
   removeQuestionFromLocalStorage,
   saveQuestionToLocalStorage,
   getNewQuestion,
+  getDefaultQuestions,
 } from "../utils/questionUtils";
 import { QuestionType } from "../constants/questionConstants";
 import {
@@ -13,7 +14,7 @@ import {
   SelectOption,
   UseQuestionsReturn,
 } from "../types";
-import { useState, useCallback } from "react";
+import { useState, useCallback, use } from "react";
 import update from "immutability-helper";
 import { useSnackbar } from "notistack";
 
@@ -399,6 +400,16 @@ export const useQuestions = ({
     questions,
   ]);
 
+  const resetBuild = useCallback(() => {
+    setQuestions([]);
+    handleAddQuestion(QuestionType.TEXT);
+    setQuestionsErrorMap({});
+    setIsBuilderValidatedOnce(false);
+    enqueueSnackbar("Form reset successful!", {
+      variant: "success",
+    });
+  }, [enqueueSnackbar, handleAddQuestion]);
+
   return {
     questions,
     questionsErrorMap,
@@ -414,5 +425,6 @@ export const useQuestions = ({
     onOptionsUpdate: handleOptionsUpdate,
     onOptionsRemove: handleOptionsRemove,
     validateBuilder,
+    resetBuild,
   };
 };

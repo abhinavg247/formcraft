@@ -65,6 +65,7 @@ export type UseQuestionsReturn = {
   ) => void;
   onOptionsRemove: (questionId: string, optionId: string) => void;
   validateBuilder: () => void;
+  resetBuild: () => void;
 };
 
 export type FormBuilderProps = Pick<
@@ -166,6 +167,7 @@ export type UseAnswersReturn = {
     questionType: QuestionType,
     answerValue: string | number | SelectOption["id"]
   ) => void;
+  resetAnswers: () => void;
 };
 
 export type FormRendererProps = Pick<UseQuestionsReturn, "questions"> &
