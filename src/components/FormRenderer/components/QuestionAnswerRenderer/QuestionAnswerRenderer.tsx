@@ -9,6 +9,7 @@ import {
   FormControl,
   Chip,
   Grow,
+  Box,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
@@ -53,7 +54,7 @@ export const QuestionAnswerRenderer = ({
       case QuestionType.NUMBER:
         const { min, max } = question.additionalDetails;
         return (
-          <div className={styles.numberDetails}>
+          <Box className={styles.numberDetails}>
             {isMinDefined(min) && (
               <Chip
                 label={`Min: ${min}`}
@@ -68,11 +69,11 @@ export const QuestionAnswerRenderer = ({
                 className={`${styles.chip} ${styles.maxChip}`}
               />
             )}
-          </div>
+          </Box>
         );
       case QuestionType.SELECT:
         return (
-          <div className={styles.selectOptions}>
+          <Box className={styles.selectOptions}>
             {question.additionalDetails.options?.map((option) => (
               <Chip
                 key={option.id}
@@ -82,7 +83,7 @@ export const QuestionAnswerRenderer = ({
                 className={`${styles.chip} ${styles.optionChip}`}
               />
             ))}
-          </div>
+          </Box>
         );
       default:
         return null;
@@ -171,8 +172,8 @@ export const QuestionAnswerRenderer = ({
 
   return (
     <Grow in={true} timeout={300}>
-      <div className={styles.questionContainer}>
-        <div className={styles.questionHeader}>
+      <Box className={styles.questionContainer}>
+        <Box className={styles.questionHeader}>
           <Typography variant="h6" className={styles.questionTitle}>
             {getQuestionTypeIcon(question.type)}
             {question.title}
@@ -184,7 +185,7 @@ export const QuestionAnswerRenderer = ({
               className={`${styles.chip} ${styles.mandatoryChip}`}
             />
           )}
-        </div>
+        </Box>
         {question.helpText && (
           <Typography
             style={{
@@ -204,8 +205,8 @@ export const QuestionAnswerRenderer = ({
           </Typography>
         )}
         {renderAdditionalDetails()}
-        <div className={styles.answerSection}>{renderAnswerInput()}</div>
-      </div>
+        <Box className={styles.answerSection}>{renderAnswerInput()}</Box>
+      </Box>
     </Grow>
   );
 };

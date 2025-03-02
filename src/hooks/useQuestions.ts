@@ -5,7 +5,6 @@ import {
   removeQuestionFromLocalStorage,
   saveQuestionToLocalStorage,
   getNewQuestion,
-  getDefaultQuestions,
 } from "../utils/questionUtils";
 import { QuestionType } from "../constants/questionConstants";
 import {
@@ -14,7 +13,7 @@ import {
   SelectOption,
   UseQuestionsReturn,
 } from "../types";
-import { useState, useCallback, use } from "react";
+import { useState, useCallback } from "react";
 import update from "immutability-helper";
 import { useSnackbar } from "notistack";
 
