@@ -12,12 +12,12 @@ import {
 } from "@mui/material";
 import { QuestionAnswerRendererProps } from "../../../../types";
 
-export const QuestionAnswerRenderer: React.FC<QuestionAnswerRendererProps> = ({
+export const QuestionAnswerRenderer = ({
   question,
   answer,
   answerError,
   handleAnswerUpdate,
-}) => {
+}: QuestionAnswerRendererProps) => {
   const renderQuestionDetails = () => {
     return (
       <Box className={styles.questionDetails}>

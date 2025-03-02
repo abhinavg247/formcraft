@@ -1,7 +1,7 @@
 .side-nav {
-  width: 250px;
-  background: #f8f9fa;
+  width: 16rem;
   padding: 1rem;
+  background: #f8f9fa;
   border-right: 1px solid #ccc;
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
   position: sticky;
   top: 0;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 4rem);
 }
 
 .side-nav-heading {

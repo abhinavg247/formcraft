@@ -6,6 +6,9 @@ import { SideNav } from "./components/SideNav";
 import { Editor as QuestionsEditor } from "./components/Editor";
 import { Box } from "@mui/material";
 
+//styles
+import styles from "./FormBuilder.module.css";
+
 //types
 import { FormBuilderProps } from "../../types";
 
@@ -27,7 +30,7 @@ export const FormBuilder = (props: FormBuilderProps): ReactElement => {
   } = props;
 
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
+    <Box className={styles["form-builder"]}>
       <SideNav onAddQuestion={onAddQuestion} />
       <QuestionsEditor
         questions={questions}

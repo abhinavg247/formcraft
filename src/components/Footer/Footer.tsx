@@ -7,6 +7,7 @@ interface FooterProps {
   validateBuilder: () => void;
   onEditBuild: () => void;
   submitForm: () => void;
+  isSavingForm: boolean;
 }
 
 export const Footer = ({
@@ -15,6 +16,7 @@ export const Footer = ({
   validateBuilder,
   onEditBuild,
   submitForm,
+  isSavingForm,
 }: FooterProps) => {
   return (
     <Box className={styles.footer}>
@@ -30,7 +32,9 @@ export const Footer = ({
           </Button>
           <Button
             onClick={submitForm}
-            className={styles["submit-button"]}
+            loading={isSavingForm}
+            loadingPosition="end"
+            sx={{ marginLeft: "1rem" }}
             variant="contained"
           >
             Submit Form

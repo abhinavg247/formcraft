@@ -62,7 +62,7 @@ export const saveQuestionToLocalStorage = async (question: Question) => {
     const delay = Math.floor(Math.random() * 2000) + 1000; // Random delay between 1-3 seconds
     setTimeout(() => {
       if (Math.random() < 0.1) {
-        reject(new Error("Failed to save question"));
+        reject(new Error("Forced randomised Error"));
         return;
       }
 
@@ -96,7 +96,7 @@ export const removeQuestionFromLocalStorage = async (
     const delay = Math.floor(Math.random() * 2000) + 1000;
     setTimeout(() => {
       if (Math.random() < 0.1) {
-        reject(new Error("Failed to save question"));
+        reject(new Error("Forced randomised Error"));
         return;
       }
       const savedQuestions = JSON.parse(

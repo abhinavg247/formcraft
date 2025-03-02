@@ -17,15 +17,7 @@ export const Editor = ({
   onOptionsUpdate,
   onOptionsRemove,
 }: EditorProps) => (
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      flexGrow: 1,
-      padding: "1rem",
-      gap: "0.75rem",
-    }}
-  >
+  <Box className={styles.editor}>
     <Typography variant="h6" className={styles["editor-heading"]}>
       Form Questions
     </Typography>

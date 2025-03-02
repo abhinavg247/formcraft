@@ -19,6 +19,7 @@ import { useSnackbar } from "notistack";
 
 //utils
 import { isObjectEmpty } from "../utils/objectUtils";
+import { useDebounce } from "./useDebounce";
 
 const shouldSaveToLocalStorage = true;
 
@@ -67,7 +68,7 @@ export const useQuestions = ({
           );
         })
         .catch((error) => {
-          enqueueSnackbar("Failed to save question", {
+          enqueueSnackbar("Failed to save question: " + error, {
             variant: "error",
           });
           console.error("Failed to save question:", error);
@@ -84,6 +85,8 @@ export const useQuestions = ({
     },
     [enqueueSnackbar]
   );
+
+  const debouncedAutoSaveQuestion = useDebounce(autoSaveQuestion);
 
   const updateQuestionsErrorMap = useCallback(() => {
     setQuestions((prevQuestions) => {
@@ -126,7 +129,7 @@ export const useQuestions = ({
       }
       if (shouldSaveToLocalStorage) {
         removeQuestionFromLocalStorage(questionId).catch((error) => {
-          enqueueSnackbar("Failed to delete question", {
+          enqueueSnackbar("Failed to delete question: " + error, {
             variant: "error",
           });
           console.error("Failed to delete question:", error);
@@ -153,12 +156,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleQuestionIsMandatoryUpdate = useCallback(
@@ -176,12 +179,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleQuestionHelpTextUpdate = useCallback(
@@ -199,12 +202,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleIsParagraphUpdate = useCallback(
@@ -224,12 +227,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleMinValueUpdate = useCallback(
@@ -249,12 +252,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleMaxValueUpdate = useCallback(
@@ -274,12 +277,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleOptionsAdd = useCallback(
@@ -299,12 +302,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleOptionsUpdate = useCallback(
@@ -335,12 +338,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleOptionsRemove = useCallback(
@@ -365,12 +368,12 @@ export const useQuestions = ({
           const latestQuestion = updatedQuestions.find(
             (currentQuestion) => currentQuestion.id === questionId
           );
-          autoSaveQuestion(latestQuestion);
+          debouncedAutoSaveQuestion(latestQuestion);
         }
         return updatedQuestions;
       });
     },
-    [autoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [debouncedAutoSaveQuestion, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const validateBuilder = useCallback(() => {

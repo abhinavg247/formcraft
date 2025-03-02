@@ -26,6 +26,8 @@ export const useAnswers = ({
   const [isRendererValidatedOnce, setIsRendererValidatedOnce] =
     useState<boolean>(false);
 
+  const [isSavingForm, setIsSavingForm] = useState<boolean>(false);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const updateAnswersErrorMap = useCallback(() => {
@@ -73,8 +75,6 @@ export const useAnswers = ({
     [isRendererValidatedOnce, updateAnswersErrorMap]
   );
 
-  const [isSavingForm, setIsSavingForm] = useState<boolean>(false);
-
   const submitForm = useCallback(() => {
     if (!isRendererValidatedOnce) {
       setIsRendererValidatedOnce(true);
@@ -88,6 +88,7 @@ export const useAnswers = ({
       enqueueSnackbar("Form Renderer has errors.", {
         variant: "error",
       });
+      setIsSavingForm(false);
       setAnswersErrorMap(rendererErrors);
     } else {
       saveAnswersToBackend(questionIdVsAnswersMap)
