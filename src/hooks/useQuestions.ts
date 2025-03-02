@@ -15,6 +15,7 @@ import {
 } from "../types";
 import { useState, useCallback } from "react";
 import update from "immutability-helper";
+import { useSnackbar } from "notistack";
 
 //utils
 import { isObjectEmpty } from "../utils/objectUtils";
@@ -37,44 +38,52 @@ export const useQuestions = ({
   const [isBuilderValidatedOnce, setIsBuilderValidatedOnce] =
     useState<boolean>(false);
 
-  const autoSaveQuestion = useCallback((question: Question) => {
-    if (getQuestionError(question)) {
-      return;
-    }
-    setQuestions((prevQuestions) =>
-      prevQuestions.map((currentQuestion) =>
-        currentQuestion.id === question.id
-          ? update(currentQuestion, {
-              isSaving: { $set: true },
-            })
-          : currentQuestion
-      )
-    );
-    saveQuestionToLocalStorage(question)
-      .then(() => {
-        setQuestions((prevQuestions) =>
-          prevQuestions.map((currentQuestion) =>
-            currentQuestion.id === question.id
-              ? update(currentQuestion, {
-                  isSaving: { $set: false },
-                })
-              : currentQuestion
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Failed to save question:", error);
-        setQuestions((prevQuestions) =>
-          prevQuestions.map((currentQuestion) =>
-            currentQuestion.id === question.id
-              ? update(currentQuestion, {
-                  isSaving: { $set: false },
-                })
-              : currentQuestion
-          )
-        );
-      });
-  }, []);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const autoSaveQuestion = useCallback(
+    (question: Question) => {
+      if (getQuestionError(question)) {
+        return;
+      }
+      setQuestions((prevQuestions) =>
+        prevQuestions.map((currentQuestion) =>
+          currentQuestion.id === question.id
+            ? update(currentQuestion, {
+                isSaving: { $set: true },
+              })
+            : currentQuestion
+        )
+      );
+      saveQuestionToLocalStorage(question)
+        .then(() => {
+          setQuestions((prevQuestions) =>
+            prevQuestions.map((currentQuestion) =>
+              currentQuestion.id === question.id
+                ? update(currentQuestion, {
+                    isSaving: { $set: false },
+                  })
+                : currentQuestion
+            )
+          );
+        })
+        .catch((error) => {
+          enqueueSnackbar("Failed to save question", {
+            variant: "error",
+          });
+          console.error("Failed to save question:", error);
+          setQuestions((prevQuestions) =>
+            prevQuestions.map((currentQuestion) =>
+              currentQuestion.id === question.id
+                ? update(currentQuestion, {
+                    isSaving: { $set: false },
+                  })
+                : currentQuestion
+            )
+          );
+        });
+    },
+    [enqueueSnackbar]
+  );
 
   const updateQuestionsErrorMap = useCallback(() => {
     setQuestions((prevQuestions) => {
@@ -117,20 +126,16 @@ export const useQuestions = ({
       }
       if (shouldSaveToLocalStorage) {
         removeQuestionFromLocalStorage(questionId).catch((error) => {
-          const deletedQuestionIndex = previousQuestions.findIndex(
-            (ques) => ques.id === questionId
-          );
-          const deletedQuestion = previousQuestions.find(
-            (ques) => ques.id === questionId
-          );
+          enqueueSnackbar("Failed to delete question", {
+            variant: "error",
+          });
+          console.error("Failed to delete question:", error);
           // reinsert failed to delete element
-          setQuestions((prevQuestions) =>
-            prevQuestions.splice(deletedQuestionIndex, 0, deletedQuestion)
-          );
+          setQuestions(previousQuestions);
         });
       }
     },
-    [isBuilderValidatedOnce, updateQuestionsErrorMap]
+    [enqueueSnackbar, isBuilderValidatedOnce, updateQuestionsErrorMap]
   );
 
   const handleQuestionTitleUpdate = useCallback(
@@ -369,14 +374,27 @@ export const useQuestions = ({
   );
 
   const validateBuilder = useCallback(() => {
-    setIsBuilderValidatedOnce(true);
+    if (!isBuilderValidatedOnce) {
+      setIsBuilderValidatedOnce(true);
+    }
     const buildErrors = getQuestionsErrorMap(questions);
     if (!isObjectEmpty(buildErrors)) {
+      enqueueSnackbar("Form build has errors.", {
+        variant: "error",
+      });
       setQuestionsErrorMap(buildErrors);
     } else {
+      enqueueSnackbar("Form build successful!", {
+        variant: "success",
+      });
       onBuilderValidationSuccess();
     }
-  }, [onBuilderValidationSuccess, questions]);
+  }, [
+    enqueueSnackbar,
+    isBuilderValidatedOnce,
+    onBuilderValidationSuccess,
+    questions,
+  ]);
 
   return {
     questions,

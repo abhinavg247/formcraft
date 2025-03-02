@@ -17,7 +17,7 @@ export const Footer = ({
   submitForm,
 }: FooterProps) => {
   return (
-    <Box className={styles["footer"]}>
+    <Box className={styles.footer}>
       {isBuilding && (
         <Button onClick={validateBuilder} variant="contained">
           Build

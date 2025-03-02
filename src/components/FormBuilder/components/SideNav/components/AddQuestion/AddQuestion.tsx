@@ -4,9 +4,6 @@ import { useCallback } from "react";
 //components
 import { Button } from "@mui/material";
 
-//styles
-import styles from "./AddQuestion.module.css";
-
 //types
 import { AddQuestionProps } from "../../../../../../types";
 
@@ -16,11 +13,7 @@ export const AddQuestion = ({ type, onAddQuestion }: AddQuestionProps) => {
   }, [onAddQuestion, type]);
 
   return (
-    <Button
-      onClick={handleButtonClick}
-      className={styles["add-question-button"]}
-      variant="contained"
-    >
+    <Button onClick={handleButtonClick} variant="contained">
       Add {type} Question
     </Button>
   );

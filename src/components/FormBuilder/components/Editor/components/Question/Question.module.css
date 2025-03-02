@@ -7,28 +7,35 @@
 }
 .questionFooter {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-top: 16px;
-}
-
-.deleteButton {
-  color: #f44336;
-}
-
-.deleteButton:hover {
-  background-color: rgba(244, 67, 54, 0.04);
+  margin-top: 10px;
+  position: relative;
 }
 
 .savingStatus {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   display: flex;
   align-items: center;
+  background-color: rgba(25, 118, 210, 0.1);
+  border-radius: 16px;
+  padding: 4px 12px;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .savingText {
-  margin-left: 8px;
-  color: #757575;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.deleteButton:hover {
+  color: #d32f2f;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.savingAnimation {
+  animation: fadeInOut 1.5s infinite ease-in-out;
 }

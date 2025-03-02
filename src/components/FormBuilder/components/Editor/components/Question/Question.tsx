@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-
 import { QuestionRendererProps } from "../../../../../../types";
 import { AdditionalDetails } from "./components/AdditionalDetails";
 import { BasicDetails } from "./components/BasicDetails";
@@ -46,18 +45,21 @@ export const QuestionRenderer = ({
         onOptionsRemove={onOptionsRemove}
       />
       <Box className={styles.questionFooter}>
-        <Box className={styles.savingStatus}>
-          {question.isSaving && (
-            <>
-              <CircularProgress size={20} />
-              <Typography variant="caption" className={styles.savingText}>
-                Saving...
-              </Typography>
-            </>
-          )}
-        </Box>
+        {question.isSaving && (
+          <Box className={`${styles.savingStatus} ${styles.savingAnimation}`}>
+            <CircularProgress size={15} />
+            <Typography
+              sx={{ ml: 1 }}
+              variant="caption"
+              className={styles.savingText}
+            >
+              Saving...
+            </Typography>
+          </Box>
+        )}
         <IconButton
           onClick={handleRemoveQuestion}
+          sx={{ ml: 1 }}
           className={styles.deleteButton}
           aria-label="delete question"
         >

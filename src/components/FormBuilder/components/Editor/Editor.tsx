@@ -1,12 +1,11 @@
 import { Box, Typography } from "@mui/material";
 import styles from "./Editor.module.css";
 import { QuestionRenderer } from "./components/Question";
-import { EditorProps, Question, QuestionsErrorMap } from "../../../../types";
+import { EditorProps, Question } from "../../../../types";
 
 export const Editor = ({
   questions,
   questionsErrorMap,
-  onAddQuestion,
   onRemoveQuestion,
   onQuestionTitleUpdate,
   onQuestionIsMandatoryUpdate,
@@ -18,7 +17,15 @@ export const Editor = ({
   onOptionsUpdate,
   onOptionsRemove,
 }: EditorProps) => (
-  <Box className={styles["editor-container"]}>
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      flexGrow: 1,
+      padding: "1rem",
+      gap: "0.75rem",
+    }}
+  >
     <Typography variant="h6" className={styles["editor-heading"]}>
       Form Questions
     </Typography>

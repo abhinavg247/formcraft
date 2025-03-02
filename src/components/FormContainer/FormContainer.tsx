@@ -1,16 +1,11 @@
-//components
+import styles from "./FormContainer.module.css";
 import { FormBuilder } from "../FormBuilder";
 import { FormRenderer } from "../FormRenderer";
 import { Footer } from "../Footer";
 import { Box } from "@mui/material";
-
-//hooks
 import { useFormScreen } from "../../hooks/useFormScreen";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useAnswers } from "../../hooks/useAnswers";
-
-//styles
-import styles from "./FormContainer.module.css";
 
 export const FormContainer = () => {
   const { isBuilding, isRendering, openBuilder, onBuilderValidationSuccess } =
@@ -35,11 +30,18 @@ export const FormContainer = () => {
     onBuilderValidationSuccess,
   });
 
-  const { submitForm } = useAnswers();
+  const {
+    questionIdVsAnswersMap,
+    answersErrorMap,
+    handleAnswerUpdate,
+    submitForm,
+  } = useAnswers({
+    questions,
+  });
 
   return (
-    <Box className={styles["form-container"]}>
-      <Box className={styles["main-content"]}>
+    <Box className={styles.formContainer}>
+      <Box className={styles.content}>
         {isBuilding && (
           <FormBuilder
             questions={questions}
@@ -57,7 +59,14 @@ export const FormContainer = () => {
             onOptionsRemove={onOptionsRemove}
           />
         )}
-        {isRendering && <FormRenderer />}
+        {isRendering && (
+          <FormRenderer
+            questions={questions}
+            questionIdVsAnswersMap={questionIdVsAnswersMap}
+            answersErrorMap={answersErrorMap}
+            handleAnswerUpdate={handleAnswerUpdate}
+          />
+        )}
       </Box>
       <Footer
         isBuilding={isBuilding}

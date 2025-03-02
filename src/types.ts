@@ -18,7 +18,6 @@ export interface Question {
     options?: SelectOption[];
   };
   isSaving?: boolean;
-  isRemoving?: boolean;
 }
 
 export type OptionsErrorMap = Record<SelectOption["id"], string>;
@@ -147,8 +146,36 @@ export type AdditionalDetailsProps = Pick<
   questionError?: QuestionError;
 };
 
-export interface FormSchema {
-  questions: Question[];
-}
+export type Answer = string | number | SelectOption["id"][];
 
-export type Answer = string | number | SelectOption["id"];
+export type QuestionIdVsAnswersMap = Record<Question["id"], Answer>;
+
+export type AnswerError = string;
+
+export type AnswersErrorMap = Record<Question["id"], AnswerError>;
+
+export type UseAnswersProps = Pick<UseQuestionsReturn, "questions">;
+
+export type UseAnswersReturn = {
+  questionIdVsAnswersMap: QuestionIdVsAnswersMap;
+  submitForm: () => void;
+  isSavingForm: boolean;
+  answersErrorMap: AnswersErrorMap;
+  handleAnswerUpdate: (
+    questionId: string,
+    questionType: QuestionType,
+    answerValue: string | number | SelectOption["id"]
+  ) => void;
+};
+
+export type FormRendererProps = Pick<UseQuestionsReturn, "questions"> &
+  Pick<
+    UseAnswersReturn,
+    "questionIdVsAnswersMap" | "answersErrorMap" | "handleAnswerUpdate"
+  >;
+
+export type QuestionAnswerRendererProps = {
+  question: Question;
+  answer?: Answer;
+  answerError?: AnswerError;
+} & Pick<UseAnswersReturn, "handleAnswerUpdate">;

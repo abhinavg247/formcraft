@@ -1,0 +1,1 @@
+export { QuestionAnswerRenderer } from "./QuestionAnswerRenderer";
